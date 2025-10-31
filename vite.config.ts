@@ -3,7 +3,7 @@ import tsConfigPaths from "vite-tsconfig-paths";
 
 export default defineConfig({
   plugins: [tsConfigPaths()],
-  //@ts-ignore
+  // @ts-expect-error propriedade existe sim
   test: {
     globals: true,
   },

@@ -29,12 +29,10 @@ class CustomAggregate extends AggregateRoot<null> {
 
 describe("Domain Events", () => {
   it("should be able to dispatch and listen to events", () => {
-    // const callbackSpy = vi.fn();
+    const callbackSpy = vi.fn();
 
     // Subscriber cadastrado
-    DomainEvents.register((domainEvent: DomainEvent) => {
-      console.log(domainEvent.getAggregateId());
-    }, CustomAggregateCreated.name);
+    DomainEvents.register(callbackSpy, CustomAggregateCreated.name);
 
     // Criando resposta sem salvar no banco
     const aggregate = CustomAggregate.create();
@@ -46,7 +44,7 @@ describe("Domain Events", () => {
     DomainEvents.dispatchEventsForAggregate(aggregate.id);
 
     // O subscriber ouve o evento e faz o que precisa ser feito
-    // expect(callbackSpy).toHaveBeenCalled();
+    expect(callbackSpy).toHaveBeenCalled();
 
     expect(aggregate.domainEvents).toHaveLength(0);
   });

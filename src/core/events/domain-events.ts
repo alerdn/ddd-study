@@ -16,18 +16,14 @@ export class DomainEvents {
     }
   }
 
-  private static dispatchAggregateEvents(aggregate: AggregateRoot<any>) {
-    aggregate.domainEvents.forEach((event: DomainEvent) => this.dispatch(event));
-  }
+  public static register(callback: DomainEventCallback, eventClassName: string) {
+    const wasEventRegisteredBefore = eventClassName in this.handlersMap;
 
-  private static removeAggregateFromMarkedDispatchList(aggregate: AggregateRoot<any>) {
-    const index = this.markedAggregates.findIndex((a) => a.equals(aggregate));
+    if (!wasEventRegisteredBefore) {
+      this.handlersMap[eventClassName] = [];
+    }
 
-    this.markedAggregates.splice(index, 1);
-  }
-
-  private static findMarkedAggregateByID(id: UniqueEntityID): AggregateRoot<any> | undefined {
-    return this.markedAggregates.find((aggregate) => aggregate.id.equals(id));
+    this.handlersMap[eventClassName].push(callback);
   }
 
   public static dispatchEventsForAggregate(id: UniqueEntityID) {
@@ -40,22 +36,26 @@ export class DomainEvents {
     }
   }
 
-  public static register(callback: DomainEventCallback, eventClassName: string) {
-    const wasEventRegisteredBefore = eventClassName in this.handlersMap;
-
-    if (!wasEventRegisteredBefore) {
-      this.handlersMap[eventClassName] = [];
-    }
-
-    this.handlersMap[eventClassName].push(callback);
-  }
-
   public static clearHandlers() {
     this.handlersMap = {};
   }
 
   public static clearMarkedAggregates() {
     this.markedAggregates = [];
+  }
+
+  private static dispatchAggregateEvents(aggregate: AggregateRoot<any>) {
+    aggregate.domainEvents.forEach((event: DomainEvent) => this.dispatch(event));
+  }
+
+  private static removeAggregateFromMarkedDispatchList(aggregate: AggregateRoot<any>) {
+    const index = this.markedAggregates.findIndex((a) => a.equals(aggregate));
+
+    this.markedAggregates.splice(index, 1);
+  }
+
+  private static findMarkedAggregateByID(id: UniqueEntityID): AggregateRoot<any> | undefined {
+    return this.markedAggregates.find((aggregate) => aggregate.id.equals(id));
   }
 
   private static dispatch(event: DomainEvent) {

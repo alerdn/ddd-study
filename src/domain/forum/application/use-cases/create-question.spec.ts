@@ -18,9 +18,11 @@ describe("Create Question Use Case", () => {
       authorId: "1",
       title: "Título da pergunta",
       content,
+      attachmentsIds: ["1", "2"],
     });
 
     expect(question.id).toBeTruthy();
     expect(inMemoryRepository.items[0].id).toEqual(question.id);
+    expect(inMemoryRepository.items[0].attachments).toHaveLength(2);
   });
 });
